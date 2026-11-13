@@ -42,17 +42,16 @@ div[data-testid="stColumn"]:has(.app-brand) {flex:0 0 112px;min-width:112px;}
 .st-key-status_filter button[aria-checked="true"] p {font-weight:750;}
 .st-key-status_filter button:hover {background:#f0f3f8!important;}
 .st-key-status_filter button[aria-checked="true"]:hover {background:#fff4dd!important;}
-div[data-testid="stColumn"]:has(.st-key-ui_language) {flex:0 0 110px;min-width:110px;}
 div[data-testid="stColumn"]:has([class*="st-key-time_unit_"]) {flex:0 0 94px;min-width:94px;}
 div[data-testid="stColumn"]:has(.st-key-undo_action),
 div[data-testid="stColumn"]:has(.st-key-redo_action),
 div[data-testid="stColumn"]:has(.st-key-import_action),
-div[data-testid="stColumn"]:has(.st-key-export_action,.st-key-theme_action) {flex:0 0 32px;min-width:32px;}
-:is(.st-key-undo_action,.st-key-redo_action,.st-key-import_action,.st-key-export_action,.st-key-theme_action) button {
+div[data-testid="stColumn"]:has(.st-key-export_action,.st-key-theme_action,.st-key-language_action) {flex:0 0 32px;min-width:32px;}
+:is(.st-key-undo_action,.st-key-redo_action,.st-key-import_action,.st-key-export_action,.st-key-theme_action,.st-key-language_action) button {
     width:32px;min-width:32px;height:32px;min-height:32px;padding:0;border-radius:6px;margin-top:3px;
     display:flex;align-items:center;justify-content:center;
 }
-:is(.st-key-undo_action,.st-key-redo_action,.st-key-import_action,.st-key-export_action,.st-key-theme_action) [data-testid="stIconMaterial"] {
+:is(.st-key-undo_action,.st-key-redo_action,.st-key-import_action,.st-key-export_action,.st-key-theme_action,.st-key-language_action) [data-testid="stIconMaterial"] {
     font-size:18px;line-height:18px;
 }
 </style>''', unsafe_allow_html=True)
@@ -304,8 +303,8 @@ def change_time_unit(key):
     st.session_state['time_unit'] = st.session_state[key]
 
 
-def change_language():
-    db.set_preference('ui_language', st.session_state['ui_language'])
+def toggle_language():
+    db.set_preference('ui_language', 'en' if language == 'zh-CN' else 'zh-CN')
 
 
 def perform_history(operation, nonce=None):
@@ -315,7 +314,7 @@ def perform_history(operation, nonce=None):
 
 
 history = db.history_status()
-brand_col, summary, spacer, unit_col, undo_col, redo_col, import_col, export, theme_col, language_col = st.columns([1, 2.8, 2.2, 1.1, .45, .45, .7, .7, .45, 1.15])
+brand_col, summary, spacer, unit_col, undo_col, redo_col, import_col, export, theme_col, language_col = st.columns([1, 2.8, 2.2, 1.1, .45, .45, .7, .7, .45, .45])
 theme_col.button('', icon=':material/light_mode:' if dark_mode else ':material/dark_mode:',
                  help=tr('切换到浅色模式') if dark_mode else tr('切换到暗黑模式'), key='theme_action', on_click=toggle_theme, width='stretch')
 undo_col.button('', icon=':material/undo:', help=tr('撤销（Ctrl+Z）'), key='undo_action',
@@ -332,8 +331,7 @@ state_filter = summary.segmented_control(tr('筛选状态'), list(filter_labels)
 time_unit_key = f'time_unit_{language}'
 st.session_state[time_unit_key] = st.session_state.get('time_unit', '按天')
 time_unit = unit_col.selectbox(tr('时间轴单位'), ['按天', '按周', '按月', '按年'], label_visibility='collapsed', key=time_unit_key, format_func=tr, on_change=change_time_unit, args=(time_unit_key,))
-st.session_state['ui_language'] = language
-language_col.selectbox('Language / 语言', ['zh-CN', 'en'], format_func=lambda value: {'zh-CN': '中文', 'en': 'English'}[value], key='ui_language', on_change=change_language, label_visibility='collapsed')
+language_col.button('', icon=':material/translate:', help=tr('切换到英文') if language == 'zh-CN' else tr('切换到中文'), key='language_action', on_click=toggle_language, width='stretch')
 values = db.values()
 effective_priorities = {}
 for task in tasks:

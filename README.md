@@ -8,7 +8,7 @@
 
 Worky is a personal task planner with an editable task table, a hierarchical updates board, and a Gantt timeline in one browser window. Built with Python and Streamlit, it runs on Windows, macOS, or Linux (including WSL) and keeps your project in a readable local JSON file.
 
-Switch between **English and Simplified Chinese** using the language selector in the top row. Your choice is saved with the project; task content, custom column names, labels, and existing data stay unchanged.
+Switch between **English and Simplified Chinese** using the translation icon button in the top row. Your choice is saved with the project; task content, custom column names, labels, and existing data stay unchanged.
 
 ![Worky: task table, nested updates, and Gantt timeline](assets/screenshots/worky-en-light.png)
 

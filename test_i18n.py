@@ -33,7 +33,7 @@ class LanguageTests(unittest.TestCase):
             with patch('model.Store',return_value=db):
                 app=AppTest.from_file('app.py',default_timeout=30).run()
                 app.selectbox[0].select('按月').run()
-                app.selectbox(key='ui_language').select('en').run()
+                app.button(key='language_action').click().run()
                 self.assertFalse(app.exception)
                 payload=grid_payload(app)
                 self.assertEqual(payload['language'],'en')
@@ -45,7 +45,7 @@ class LanguageTests(unittest.TestCase):
                 self.assertEqual(db.preference('ui_language'),'en')
                 self.assertEqual(Store(db.path).preference('ui_language'),'en')
                 self.assertEqual(payload['translations']['更新看板'],'Updates board')
-                app.selectbox(key='ui_language').select('zh-CN').run()
+                app.button(key='language_action').click().run()
                 self.assertEqual(grid_payload(app)['language'],'zh-CN')
                 self.assertEqual(grid_payload(app)['timeUnit'],'按月')
                 self.assertEqual(db.all(),original)

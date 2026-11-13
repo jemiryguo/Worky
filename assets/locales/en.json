@@ -301,5 +301,7 @@
   "<div class=\"board-group-empty\">暂无更新</div>": "<div class=\"board-group-empty\">No updates yet</div>",
   "<input name=\"name\" aria-label=\"新列名称\" placeholder=\"列名称\" maxlength=\"50\" required><select name=\"type\" aria-label=\"列数据类型\"><option value=\"text\">文本</option><option value=\"number\">数字</option><option value=\"date\">日期</option><option value=\"checkbox\">复选框</option></select><label class=\"new-sortable\"><input type=\"checkbox\" name=\"sortable\" aria-label=\"新列允许排序\">允许排序</label><button type=\"submit\">添加此列</button>": "<input name=\"name\" aria-label=\"New column name\" placeholder=\"Column name\" maxlength=\"50\" required><select name=\"type\" aria-label=\"Column type\"><option value=\"text\">Text</option><option value=\"number\">Number</option><option value=\"date\">Date</option><option value=\"checkbox\">Checkbox</option></select><label class=\"new-sortable\"><input type=\"checkbox\" name=\"sortable\" aria-label=\"Allow sorting for the new column\">Allow sorting</label><button type=\"submit\">Add column</button>",
   "<span class=\"board-edited\">已编辑</span>": "<span class=\"board-edited\">Edited</span>",
-  "<span class=\"readonly\">进行中</span>": "<span class=\"readonly\">In progress</span>"
+  "<span class=\"readonly\">进行中</span>": "<span class=\"readonly\">In progress</span>",
+  "切换到英文": "Switch to English",
+  "切换到中文": "Switch to Chinese"
 }
