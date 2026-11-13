@@ -6,16 +6,16 @@
 <p align="center">Keep work in order.</p>
 <p align="center"><strong>English</strong> · <a href="README.zh-CN.md">简体中文</a></p>
 
-Worky is a personal task planner with an editable task table, a hierarchical updates board, and a Gantt timeline in one browser window. Built with Python and Streamlit, it runs on Linux or WSL and keeps your project in a readable local JSON file.
+Worky is a personal task planner with an editable task table, a hierarchical updates board, and a Gantt timeline in one browser window. Built with Python and Streamlit, it runs on Windows, macOS, or Linux (including WSL) and keeps your project in a readable local JSON file.
 
-The interface is currently in Simplified Chinese.
+Switch between **English and Simplified Chinese** using the language selector in the top row. Your choice is saved with the project; task content, custom column names, labels, and existing data stay unchanged.
 
-![Worky: task table, nested updates, and Gantt timeline](assets/screenshots/worky-light.png)
+![Worky: task table, nested updates, and Gantt timeline](assets/screenshots/worky-en-light.png)
 
 <details>
 <summary>Dark mode</summary>
 
-![Worky in dark mode](assets/screenshots/worky-dark.png)
+![Worky in dark mode](assets/screenshots/worky-en-dark.png)
 
 </details>
 
@@ -34,27 +34,34 @@ The interface is currently in Simplified Chinese.
 
 ### Requirements
 
-- Linux, or a Linux distribution running inside WSL.
+- Windows, macOS, or Linux. WSL is optional for Windows users.
 - [uv](https://docs.astral.sh/uv/getting-started/installation/).
 - Python 3.12; uv can install the required interpreter.
 
-The backend uses Linux file locking (`fcntl`); native Windows execution is not currently supported. Windows users should run the following commands inside WSL.
+Install [Git](https://git-scm.com/) and uv, then clone the repository and install its locked dependencies:
 
 ```bash
 git clone git@github.com:jemiryguo/Worky.git
 cd Worky
 uv sync --locked
-./start.sh
 ```
 
-Open **http://localhost:8501** in your browser. The startup script listens on `0.0.0.0`; Worky is intended for a personal, trusted environment and has no built-in login or access control.
+Start Worky on **any supported platform**:
+
+```bash
+uv run --locked python run.py
+```
+
+Or use the convenience launcher: **`start.bat`** in Windows PowerShell / Command Prompt, or **`./start.sh`** on macOS, Linux, and WSL.
+
+Open **http://localhost:8501** in your browser. The server listens on `0.0.0.0` by default; Worky is intended for a personal, trusted environment and has no built-in login or access control.
 
 An empty project is created automatically on first launch. No sample tasks or personal data are included in the repository.
 
 Use a different port if needed:
 
 ```bash
-PORT=8502 ./start.sh
+uv run --locked python run.py --port 8502 --host 127.0.0.1
 ```
 
 ## Using Worky
@@ -74,7 +81,7 @@ P0 is the highest priority. An unset priority inherits from the parent, and comp
 - **Single-click a task bar** to select it and show its updates. **Double-click** to open task details.
 - Drag the **date header** to select a date range. The range stays selected after release, dims the timeline outside it, and filters updates, including both the first and last selected dates.
 - Click **empty Gantt space** to clear the task and date selections and return the updates board to its overview.
-- Use the bottom-right **+ / −** buttons, scroll over the date header, or use **Ctrl + wheel** over the timeline to zoom. Wheel zoom keeps the date under the pointer in place.
+- Use the bottom-right **+ / −** buttons, scroll over the date header, or use **Ctrl + wheel** (**⌘ + wheel** on macOS) over the timeline to zoom. Wheel zoom keeps the date under the pointer in place.
 
 Task bars start at the beginning of their start date. Open tasks extend to the current time; tasks ending today use their recorded completion time, while past completion dates extend to the end of that day. Weeks begin on Sunday.
 
@@ -82,7 +89,7 @@ Task bars start at the beginning of their start date. Open tasks extend to the c
 
 Select an item to add or edit its dated Markdown updates. A content-only edit preserves the original update timestamp; changing the date explicitly moves the update. Dates are shown and selected at day precision.
 
-Enable **子任务更新** (“subtask updates”) to include every descendant. Parent task containers wrap child containers; each task's own updates are ordered chronologically, and sibling tasks follow their table order. Containers with no updates in the current scope are omitted, while ancestors of matching updates remain visible.
+Enable **Subtask updates** to include every descendant. Parent task containers wrap child containers; each task's own updates are ordered chronologically, and sibling tasks follow their table order. Containers with no updates in the current scope are omitted, while ancestors of matching updates remain visible.
 
 With no task selected, the board shows updates from top-level tasks. Enabling subtask updates in this overview shows updates from the entire project. New updates are added to the selected task, so select a task before adding one.
 
@@ -90,7 +97,7 @@ Updates also appear as markers on the Gantt timeline. Hover to preview their con
 
 ### Undo, import, and export
 
-Use the top-row buttons or **Ctrl+Z** / **Ctrl+Y** to undo and redo. A new change after undo clears the redo branch. History survives service restarts until its oldest records are removed by the size limit.
+Use the top-row buttons or **Ctrl+Z** / **Ctrl+Y** (or **⌘Z** / **⌘Y**, **⌘Shift+Z** on macOS) to undo and redo. A new change after undo clears the redo branch. History survives service restarts until its oldest records are removed by the size limit.
 
 **Export** downloads project JSON without undo history. **Import** opens a file picker, validates the project, and asks for confirmation before replacing the current project. Import itself can be undone using the local server's history; uploaded undo history is not imported.
 
@@ -108,34 +115,45 @@ Back up **`tasks.json`** to preserve the project. Copy the matching history file
 
 | Environment variable | Default | Meaning |
 | --- | --- | --- |
-| `PORT` | `8501` | Port used by `start.sh`. |
+| `PORT` | `8501` | Port used by `run.py` and both launchers. |
+| `WORKY_HOST` | `0.0.0.0` | Address used by `run.py`; `--host` overrides it. |
 | `TASK_DATA_PATH` | `data/tasks.json` in the project directory | Project JSON path; its history and lock files are maintained alongside it. |
 | `TASK_TIMEZONE` | `Asia/Shanghai` | IANA timezone for dates and timestamps. |
 | `WORKY_HISTORY_MAX_BYTES` | `10485760` (10 MiB) | Maximum history file size in UTF-8 bytes; minimum `1024`. |
 
-For example, keep the project outside the source directory and allow up to 5 MiB of history:
+For example, in a POSIX shell, keep the project outside the source directory and allow up to 5 MiB of history:
 
 ```bash
 TASK_DATA_PATH="$HOME/worky-data/tasks.json" \
 WORKY_HISTORY_MAX_BYTES=5242880 \
-./start.sh
+uv run --locked python run.py
 ```
 
 When history exceeds the limit, its oldest records are removed. If a single operation's history exceeds the entire limit, the project change is saved but that operation cannot be undone. Task updates are project content and are **not** removed when undo history is trimmed.
+
+In Windows PowerShell, set environment variables as follows:
+
+```powershell
+$env:TASK_DATA_PATH = "$env:USERPROFILE\worky-data\tasks.json"
+$env:WORKY_HISTORY_MAX_BYTES = "5242880"
+uv run --locked python run.py
+```
+
+All text files use UTF-8. Cross-platform OS file locks coordinate writes; file contents are flushed before atomic replacement. Directory syncing is used where the platform supports it. `tzdata` is included so configured timezones also work on Windows.
 
 ## Development
 
 ```bash
 uv sync --locked
-uv run --locked python -m unittest -v \
-  test_model.py test_history.py test_updates.py \
-  test_ui.py test_read_cache.py test_history_files.py
+uv run --locked python -m unittest discover -v
 ```
 
-The test suite covers task hierarchy, dates, labels, updates, persistence, history migration, size limits, concurrency, write failures, and Streamlit payloads. Tests use temporary projects.
+The test suite covers task hierarchy, dates, labels, updates, persistence, history migration, size limits, concurrency, write failures, and Streamlit payloads. Tests use temporary projects. GitHub Actions runs them on Windows, macOS, and Ubuntu with Python 3.12. The directory-fsync test is skipped on Windows, where that operation is not available.
 
 | Path | Role |
 | --- | --- |
+| `run.py`, `start.bat`, `start.sh` | Cross-platform server entry point and launchers. |
+| `i18n.py`, `assets/locales/en.json` | Shared presentation translations for Python and browser components. |
 | `app.py` | Streamlit layout, dialogs, Markdown rendering, and event handling. |
 | `model.py` | Project storage, hierarchy rules, updates, and bounded history. |
 | `grid/` | Browser task table, updates board, and Gantt component. |

@@ -10,10 +10,18 @@ import streamlit.components.v1 as components
 from markdown_it import MarkdownIt
 
 from model import Store, STATUSES, today, flatten, TZ
+from i18n import translator, english_catalog
+
+db = Store(os.environ.get('TASK_DATA_PATH') or os.environ.get('TASK_DB_PATH'))
+language = db.preference('ui_language', 'zh-CN')
+if language not in ('zh-CN', 'en'):
+    language = 'zh-CN'
+tr = translator(language)
+translations = english_catalog() if language == 'en' else {}
 
 logo_svg = (Path(__file__).parent / 'assets' / 'logo.svg').read_text(encoding='utf-8-sig')
 logo_url = 'data:image/svg+xml;base64,' + base64.b64encode(logo_svg.encode('utf-8')).decode('ascii')
-st.set_page_config(page_title='Worky · 让工作井然有序', page_icon=logo_url, layout='wide', initial_sidebar_state='collapsed')
+st.set_page_config(page_title=tr('Worky · 让工作井然有序'), page_icon=logo_url, layout='wide', initial_sidebar_state='collapsed')
 st.markdown('''<style>
 .block-container {padding:.6rem 1rem 0; max-width:none;}
 .stApp {background:#f7f9fc;}
@@ -34,7 +42,8 @@ div[data-testid="stColumn"]:has(.app-brand) {flex:0 0 112px;min-width:112px;}
 .st-key-status_filter button[aria-checked="true"] p {font-weight:750;}
 .st-key-status_filter button:hover {background:#f0f3f8!important;}
 .st-key-status_filter button[aria-checked="true"]:hover {background:#fff4dd!important;}
-div[data-testid="stColumn"]:has(.st-key-time_unit) {flex:0 0 94px;min-width:94px;}
+div[data-testid="stColumn"]:has(.st-key-ui_language) {flex:0 0 110px;min-width:110px;}
+div[data-testid="stColumn"]:has([class*="st-key-time_unit_"]) {flex:0 0 94px;min-width:94px;}
 div[data-testid="stColumn"]:has(.st-key-undo_action),
 div[data-testid="stColumn"]:has(.st-key-redo_action),
 div[data-testid="stColumn"]:has(.st-key-import_action),
@@ -47,9 +56,9 @@ div[data-testid="stColumn"]:has(.st-key-export_action,.st-key-theme_action) {fle
     font-size:18px;line-height:18px;
 }
 </style>''', unsafe_allow_html=True)
-db = Store(os.environ.get('TASK_DATA_PATH') or os.environ.get('TASK_DB_PATH'))
+
 dark_mode = db.preference('color_theme', 'light') == 'dark'
-dark_css = (Path(__file__).parent / 'assets' / 'dark-app.css').read_text() if dark_mode else ''
+dark_css = (Path(__file__).parent / 'assets' / 'dark-app.css').read_text(encoding='utf-8') if dark_mode else ''
 st.markdown(f'<style>{dark_css}</style>', unsafe_allow_html=True)
 tasks = db.all()
 ordered = flatten(tasks)
@@ -59,17 +68,17 @@ labels.update({t['id']: '　' * depth + t['title'] + f" · #{t['id']}" for t, de
 custom_columns = db.columns()
 markdown = MarkdownIt('commonmark', {'html': False, 'breaks': True}).enable(['strikethrough', 'table'])
 builtins = [
-    dict(key='id', name='编号', type='id', width=54),
-    dict(key='title', name='条目', type='title', width=235),
-    dict(key='priority', name='P', ariaName='优先级', type='priority', width=50),
-    dict(key='labels', name='标签', type='labels', width=140),
-    dict(key='notes', name='备注', type='text', width=160),
-    dict(key='updates', name='更新', type='updates', width=150),
-    dict(key='start_date', name='开始日期', type='date', width=116),
-    dict(key='closed_date', name='结束日期', type='date', width=116),
-    dict(key='created_at', name='创建时间', type='readonly', width=165),
+    dict(key='id', name=tr('编号'), type='id', width=54),
+    dict(key='title', name=tr('条目'), type='title', width=235),
+    dict(key='priority', name='P', ariaName=tr('优先级'), type='priority', width=50),
+    dict(key='labels', name=tr('标签'), type='labels', width=140),
+    dict(key='notes', name=tr('备注'), type='text', width=160),
+    dict(key='updates', name=tr('更新'), type='updates', width=150),
+    dict(key='start_date', name=tr('开始日期'), type='date', width=116),
+    dict(key='closed_date', name=tr('结束日期'), type='date', width=116),
+    dict(key='created_at', name=tr('创建时间'), type='readonly', width=165),
 ]
-columns = builtins + [dict(key=f"custom_{c['id']}", name=c['name']+('（自定义）' if c['name'] in {b['name'] for b in builtins} else ''), rawName=c['name'], type=c['field_type'], width=150) for c in custom_columns]
+columns = builtins + [dict(key=f"custom_{c['id']}", name=c['name']+(tr('（自定义）') if c['name'] in {b['name'] for b in builtins} else ''), rawName=c['name'], type=c['field_type'], width=150) for c in custom_columns]
 default_columns = ['id', 'title', 'priority', 'labels', 'notes', 'updates', 'start_date', 'closed_date']
 saved_order = db.preference('column_order', [])
 if not db.preference('priority_column_added', False):
@@ -126,7 +135,7 @@ sunday_date = components.declare_component('sunday_date', path=str(Path(__file__
 
 def pick_date(label, value, key):
     st.caption(label)
-    chosen = sunday_date(darkMode=dark_mode, value=value.isoformat(), max=today().isoformat(), label=label, key=key, default=value.isoformat())
+    chosen = sunday_date(language=language, translations=translations, darkMode=dark_mode, value=value.isoformat(), max=today().isoformat(), label=label, key=key, default=value.isoformat())
     return date.fromisoformat(chosen)
 
 
@@ -136,76 +145,76 @@ def queue_date_conflict(task_id, title, notes, parent_id, status, start, end):
     st.rerun()
 
 
-@st.dialog('日期冲突', width='medium', dismissible=False)
+@st.dialog(tr('日期冲突'), width='medium', dismissible=False)
 def resolve_date_conflict(change):
-    st.warning(f"结束日期 {change['end']} 早于开始日期 {change['start']}。")
-    st.write(f"是否将开始日期也改为 {change['end']}？")
+    st.warning(tr("结束日期 {0} 早于开始日期 {1}。", change['end'], change['start']))
+    st.write(tr("是否将开始日期也改为 {0}？", change['end']))
     cancel, adjust = st.columns([1, 2])
-    if cancel.button('取消', width='stretch'):
+    if cancel.button(tr('取消'), width='stretch'):
         st.session_state.pop('date_conflict', None)
         st.rerun()
-    if adjust.button('同时修改开始日期', type='primary', width='stretch'):
+    if adjust.button(tr('同时修改开始日期'), type='primary', width='stretch'):
         try:
             end = date.fromisoformat(change['end'])
             db.update(change['task_id'], change['title'], change['notes'], change['parent_id'], change['status'], end, end)
             st.session_state.pop('date_conflict', None)
             st.rerun()
         except (ValueError, StopIteration) as exc:
-            st.error(str(exc) or '条目已发生变化，请取消后重试。')
+            st.error(tr(str(exc)) or '条目已发生变化，请取消后重试。')
 
 
-@st.dialog('条目详情', width='large')
+@st.dialog(tr('条目详情'), width='large')
 def edit_item(task_id):
     task = by_id[task_id]
     is_task = task['kind'] == 'task'
-    st.caption(f"#{task_id} · 创建于 {task['created_at'][:16].replace('T', ' ')}")
+    st.caption(tr("#{0} · 创建于 {1}", task_id, task['created_at'][:16].replace('T', ' ')))
     with st.form(f'edit_item_{task_id}'):
-        title = st.text_area('名称（可留空，仅填写备注时作为文本条目）', task['title'], height=90)
-        notes = st.text_area('备注 / 补充说明', task['notes'], height=170)
+        title = st.text_area(tr('名称（可留空，仅填写备注时作为文本条目）'), task['title'], height=90)
+        notes = st.text_area(tr('备注 / 补充说明'), task['notes'], height=170)
         status = task['status']
         start = date.fromisoformat(task['start_date'])
         closed = date.fromisoformat(task['closed_date']) if task['closed_date'] else None
         if is_task:
             a, b = st.columns(2)
             with a:
-                start = pick_date('开始日期', start, f'detail_start_{task_id}')
+                start = pick_date(tr('开始日期'), start, f'detail_start_{task_id}')
             if closed:
                 with b:
                     if task['auto_closed']:
-                        st.caption('结束日期（随子任务计算）')
+                        st.caption(tr('结束日期（随子任务计算）'))
                         st.write(closed.isoformat())
                     else:
-                        closed = pick_date('结束日期', closed, f'detail_end_{task_id}')
-            st.caption(f"{status} · 在表格前方勾选完成，右键标记废弃。父子任务独立记录。")
-        if st.form_submit_button('保存修改', type='primary', width='stretch'):
+                        closed = pick_date(tr('结束日期'), closed, f'detail_end_{task_id}')
+            st.caption(tr("{0} · 在表格前方勾选完成，右键标记废弃。父子任务独立记录。", tr(status)))
+        if st.form_submit_button(tr('保存修改'), type='primary', width='stretch'):
             try:
                 if title.strip() and closed and closed < start and not task['auto_closed']:
                     queue_date_conflict(task_id, title, notes, task['parent_id'], status, start, closed)
                 db.update(task_id, title, notes, task['parent_id'], status, start, closed)
                 st.rerun()
             except ValueError as exc:
-                st.error(str(exc))
-    with st.expander('Markdown 预览'):
+                st.error(tr(str(exc)))
+    with st.expander(tr('Markdown 预览')):
         if task['title']:
             st.markdown(task['title'])
         st.markdown(task['notes'] or '')
 
 
-@st.dialog('确认删除', width='medium')
+@st.dialog(tr('确认删除'), width='medium')
 def confirm_delete(task_id):
     affected = {task_id} | db.descendants(tasks, task_id)
     entries = [(t, depth) for t, depth in ordered if t['id'] in affected]
-    st.warning(f'将删除 {len(affected)} 个条目，包括此条目及其全部子条目。删除后可撤销。')
+    st.warning(tr("将删除 {0} 个条目，包括此条目及其全部子条目。删除后可撤销。", len(affected)))
     st.text('\n'.join('  ' * (depth - entries[0][1]) + f"#{t['id']} {t['title'] or t['notes'][:100]}" for t, depth in entries))
     cancel, confirm = st.columns(2)
-    if cancel.button('取消', width='stretch'):
+    if cancel.button(tr('取消'), width='stretch'):
         st.rerun()
-    if confirm.button('确认删除', type='primary', width='stretch'):
+    if confirm.button(tr('确认删除'), type='primary', width='stretch'):
         try:
             db.delete(task_id, expected_ids=affected)
             st.rerun()
         except ValueError as exc:
-            st.error(str(exc))
+            st.error(tr(str(exc)))
 
 
 def patch_item(event):
@@ -234,61 +243,69 @@ def patch_item(event):
     db.update(tid, changed['title'], changed['notes'], changed['parent_id'], changed['status'], start, closed)
 
 
-@st.dialog('确认删除自定义列', width='medium')
+@st.dialog(tr('确认删除自定义列'), width='medium')
 def confirm_delete_column(column_id):
     col = next(c for c in custom_columns if c['id']==column_id)
     count = sum(f'custom_{column_id}' in row for row in db.values().values())
-    st.warning(f"将删除自定义列「{col['name']}」及其中 {count} 个条目的值。删除后可撤销。")
+    st.warning(tr("将删除自定义列「{0}」及其中 {1} 个条目的值。删除后可撤销。", col['name'], count))
     cancel, confirm = st.columns(2)
-    if cancel.button('取消', width='stretch'):
+    if cancel.button(tr('取消'), width='stretch'):
         st.rerun()
-    if confirm.button('确认删除该列', type='primary', width='stretch'):
+    if confirm.button(tr('确认删除该列'), type='primary', width='stretch'):
         try:
             db.delete_column(column_id, expected_name=col['name'])
             st.rerun()
         except ValueError as exc:
-            st.error(str(exc))
+            st.error(tr(str(exc)))
 
 
-@st.dialog('确认删除标签', width='medium')
+@st.dialog(tr('确认删除标签'), width='medium')
 def confirm_delete_label(name, expected_ids):
-    st.warning(f'将删除标签「{name}」，并从 {len(expected_ids)} 个任务中移除该标签。任务内容保留，删除后可撤销。')
+    st.warning(tr("将删除标签「{0}」，并从 {1} 个任务中移除该标签。任务内容保留，删除后可撤销。", name, len(expected_ids)))
     cancel, confirm = st.columns(2)
-    if cancel.button('取消', width='stretch'):
+    if cancel.button(tr('取消'), width='stretch'):
         st.rerun()
-    if confirm.button('确认删除标签', type='primary', width='stretch'):
+    if confirm.button(tr('确认删除标签'), type='primary', width='stretch'):
         try:
             db.delete_label(name, expected_ids=expected_ids)
             st.session_state['history_nonce'] = str(uuid4())
             st.rerun()
         except ValueError as exc:
-            st.error(str(exc))
+            st.error(tr(str(exc)))
 
 
-@st.dialog('导入 JSON', width='medium')
+@st.dialog(tr('导入 JSON'), width='medium')
 def import_data(content, filename):
     st.caption(filename)
     try:
         incoming = db.parse_import(content)
     except ValueError as exc:
-        st.error(str(exc))
+        st.error(tr(str(exc)))
         return
-    st.write(f"文件包含 {len(incoming['items'])} 个条目、{len(incoming['columns'])} 个自定义列。")
-    st.warning(f"导入将替换当前 {len(db.all())} 个条目及列设置。确认后立即保存，可通过撤销恢复。")
+    st.write(tr("文件包含 {0} 个条目、{1} 个自定义列。", len(incoming['items']), len(incoming['columns'])))
+    st.warning(tr("导入将替换当前 {0} 个条目及列设置。确认后立即保存，可通过撤销恢复。", len(db.all())))
     cancel, confirm = st.columns(2)
-    if cancel.button('取消导入', width='stretch'):
+    if cancel.button(tr('取消导入'), width='stretch'):
         st.rerun()
-    if confirm.button('确认导入', type='primary', width='stretch'):
+    if confirm.button(tr('确认导入'), type='primary', width='stretch'):
         try:
             db.import_json(content)
             st.session_state['history_nonce'] = str(uuid4())
             st.rerun()
         except ValueError as exc:
-            st.error(str(exc))
+            st.error(tr(str(exc)))
 
 
 def toggle_theme():
     db.set_preference('color_theme', 'light' if db.preference('color_theme', 'light') == 'dark' else 'dark')
+
+
+def change_time_unit(key):
+    st.session_state['time_unit'] = st.session_state[key]
+
+
+def change_language():
+    db.set_preference('ui_language', st.session_state['ui_language'])
 
 
 def perform_history(operation, nonce=None):
@@ -298,21 +315,25 @@ def perform_history(operation, nonce=None):
 
 
 history = db.history_status()
-brand_col, summary, spacer, unit_col, undo_col, redo_col, import_col, export, theme_col = st.columns([1, 2.8, 2.2, 1.1, .45, .45, .7, .7, .45])
+brand_col, summary, spacer, unit_col, undo_col, redo_col, import_col, export, theme_col, language_col = st.columns([1, 2.8, 2.2, 1.1, .45, .45, .7, .7, .45, 1.15])
 theme_col.button('', icon=':material/light_mode:' if dark_mode else ':material/dark_mode:',
-                 help='切换到浅色模式' if dark_mode else '切换到暗黑模式', key='theme_action', on_click=toggle_theme, width='stretch')
-undo_col.button('', icon=':material/undo:', help='撤销（Ctrl+Z）', key='undo_action',
+                 help=tr('切换到浅色模式') if dark_mode else tr('切换到暗黑模式'), key='theme_action', on_click=toggle_theme, width='stretch')
+undo_col.button('', icon=':material/undo:', help=tr('撤销（Ctrl+Z）'), key='undo_action',
                 disabled=not history['can_undo'], on_click=perform_history, args=('undo',), width='stretch')
-redo_col.button('', icon=':material/redo:', help='重做（Ctrl+Y）', key='redo_action',
+redo_col.button('', icon=':material/redo:', help=tr('重做（Ctrl+Y）'), key='redo_action',
                 disabled=not history['can_redo'], on_click=perform_history, args=('redo',), width='stretch')
 counts = [sum(t['kind']=='task' and t['status']==status for t in tasks) for status in STATUSES]
-brand_col.markdown(f'<div class="app-brand" style="height:38px;display:flex;align-items:center;gap:9px;white-space:nowrap;font-size:20px;font-weight:650;color:#334155"><img src="{logo_url}" width="30" height="30" alt="Worky标志" style="display:block"><span>Worky</span></div>', unsafe_allow_html=True)
-filter_labels = {'全部状态': f'全部 {len(tasks)}', '进行中': f'进行中 {counts[0]}', '已经完结': f'完结 {counts[1]}', '已经废弃': f'废弃 {counts[2]}'}
+brand_col.markdown(f'<div class="app-brand" style="height:38px;display:flex;align-items:center;gap:9px;white-space:nowrap;font-size:20px;font-weight:650;color:#334155"><img src="{logo_url}" width="30" height="30" alt="Worky" style="display:block"><span>Worky</span></div>', unsafe_allow_html=True)
+filter_labels = {'全部状态': f"{tr('全部')} {len(tasks)}", '进行中': f"{tr('进行中')} {counts[0]}", '已经完结': f"{tr('完结')} {counts[1]}", '已经废弃': f"{tr('废弃')} {counts[2]}"}
 if st.session_state.get('status_filter') not in (None, *filter_labels):
     st.session_state['status_filter'] = '全部状态'
-state_filter = summary.segmented_control('筛选状态', list(filter_labels), format_func=filter_labels.get,
+state_filter = summary.segmented_control(tr('筛选状态'), list(filter_labels), format_func=filter_labels.get,
                                           default='全部状态', required=True, label_visibility='collapsed', key='status_filter', width='content', wrap=False)
-time_unit = unit_col.selectbox('时间轴单位', ['按天', '按周', '按月', '按年'], label_visibility='collapsed', key='time_unit')
+time_unit_key = f'time_unit_{language}'
+st.session_state[time_unit_key] = st.session_state.get('time_unit', '按天')
+time_unit = unit_col.selectbox(tr('时间轴单位'), ['按天', '按周', '按月', '按年'], label_visibility='collapsed', key=time_unit_key, format_func=tr, on_change=change_time_unit, args=(time_unit_key,))
+st.session_state['ui_language'] = language
+language_col.selectbox('Language / 语言', ['zh-CN', 'en'], format_func=lambda value: {'zh-CN': '中文', 'en': 'English'}[value], key='ui_language', on_change=change_language, label_visibility='collapsed')
 values = db.values()
 effective_priorities = {}
 for task in tasks:
@@ -334,12 +355,12 @@ for task in tasks:
         if col['field_type'] == 'text':
             key = f"custom_{col['id']}"
             rendered[task['id']][key] = markdown.render(str(values.get(task['id'], {}).get(key) or ''))
-export.download_button('', db.export_json(), 'tasks.json', 'application/json', icon=':material/download:', help='导出 JSON', key='export_action', width='stretch')
+export.download_button('', db.export_json(), 'tasks.json', 'application/json', icon=':material/download:', help=tr('导出 JSON'), key='export_action', width='stretch')
 if st.session_state.get('notice'):
-    st.error(st.session_state.pop('notice'))
+    st.error(tr(st.session_state.pop('notice')))
 
 grid = components.declare_component('task_tree_grid', path=str(Path(__file__).parent / 'grid'))
-event = grid(darkMode=dark_mode, items=tasks, columns=[c for c in columns if c['key'] in visible], allColumns=columns, values=values, rendered=rendered, renderedUpdates=rendered_updates, effectivePriorities=effective_priorities,
+event = grid(language=language, translations=translations, darkMode=dark_mode, items=tasks, columns=[c for c in columns if c['key'] in visible], allColumns=columns, values=values, rendered=rendered, renderedUpdates=rendered_updates, effectivePriorities=effective_priorities,
              sortState=db.preference('sort_state', None), now=datetime.now(TZ).isoformat(), timezone=TZ.key,
              pinnedColumns=db.preference('pinned_columns', []),
              createdNonce=st.session_state.get('created_nonce'),
@@ -351,11 +372,11 @@ event = grid(darkMode=dark_mode, items=tasks, columns=[c for c in columns if c['
              key='main_grid', default=None)
 json_import_button = components.declare_component('json_import_button', path=str(Path(__file__).parent / 'import_button'))
 with import_col:
-    selected_file = json_import_button(darkMode=dark_mode, key='import_action', default=None)
+    selected_file = json_import_button(language=language, translations=translations, darkMode=dark_mode, key='import_action', default=None)
 if selected_file and selected_file.get('nonce') != st.session_state.get('last_import_nonce'):
     st.session_state['last_import_nonce'] = selected_file.get('nonce')
     if selected_file.get('error'):
-        st.error(selected_file['error'])
+        st.error(tr(selected_file['error']))
     elif isinstance(selected_file.get('content'), str):
         import_data(selected_file['content'].encode('utf-8'), selected_file.get('filename', 'tasks.json'))
 

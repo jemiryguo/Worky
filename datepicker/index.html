@@ -1,9 +1,13 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><style>
+<!doctype html><html lang="zh-CN"><head><script>
+window.workyLanguage='zh-CN';window.workyTranslations={};
+function tr(source,...values){let result=window.workyLanguage==='en'?(window.workyTranslations[source]??source):source;return String(result).replace(/\{(\d+)\}/g,(match,index)=>index<values.length?String(values[index]):match)}
+function setWorkyLanguage(language,translations){window.workyLanguage=language==='en'?'en':'zh-CN';window.workyTranslations=translations||{};document.documentElement.lang=window.workyLanguage;document.querySelectorAll('[data-i18n-title]').forEach(el=>el.title=tr(el.dataset.i18nTitle));document.querySelectorAll('[data-i18n-aria]').forEach(el=>el.setAttribute('aria-label',tr(el.dataset.i18nAria)))}
+</script><meta charset="utf-8"><style>
 body{margin:0;font:14px 'Segoe UI','Microsoft YaHei',sans-serif}#date-button{width:100%;height:39px;text-align:left;background:#edf2f7;border:1px solid #d9e0e9;border-radius:7px;padding:0 12px;color:#26364d;cursor:pointer}
 html[data-theme="dark"]{color-scheme:dark;background:#1c2533}html[data-theme="dark"] body{background:#1c2533;color:#d7dfeb}html[data-theme="dark"] #date-button{background:#263140;color:#d7dfeb;border-color:#42516a}
-</style><script>document.documentElement.dataset.theme=sessionStorage.getItem("colorTheme")||"light"</script></head><body><button type="button" id="date-button" aria-label="选择日期">—</button><script src="calendar.js?v=portal-20261111-1"></script><script>
+</style><script>document.documentElement.dataset.theme=sessionStorage.getItem("colorTheme")||"light"</script></head><body><button type="button" id="date-button" aria-label="选择日期" data-i18n-aria="选择日期">—</button><script src="calendar.js?v=i18n-1"></script><script>
 let args={},value=null;const send=(type,data={})=>parent.postMessage({isStreamlitMessage:true,type,...data},'*');
-window.addEventListener('message',e=>{if(e.data.type==='streamlit:render'){args=e.data.args;document.documentElement.dataset.theme=args.darkMode?'dark':'light';if(value===null)value=args.value;const b=document.getElementById('date-button');b.textContent=value||'—';b.setAttribute('aria-label',args.label||'选择日期')}});
+window.addEventListener('message',e=>{if(e.data.type==='streamlit:render'){args=e.data.args;setWorkyLanguage(args.language,args.translations);document.documentElement.dataset.theme=args.darkMode?'dark':'light';if(value===null)value=args.value;const b=document.getElementById('date-button');b.textContent=value||'—';b.setAttribute('aria-label',args.label||tr('选择日期'))}});
 document.getElementById('date-button').onclick=()=>{SundayCalendar.show({portal:true,anchor:document.getElementById('date-button'),value,max:args.max,onSelect:selected=>{value=selected;document.getElementById('date-button').textContent=value;send('streamlit:setComponentValue',{value,dataType:'json'});send('streamlit:setFrameHeight',{height:45})},onClose:()=>send('streamlit:setFrameHeight',{height:45})})};
 send('streamlit:componentReady',{apiVersion:1});send('streamlit:setFrameHeight',{height:45});
 </script><script src="tooltips.js?v=theme-1"></script></body></html>

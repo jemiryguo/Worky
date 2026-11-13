@@ -18,21 +18,21 @@ class HistoryTests(unittest.TestCase):
         self.tmp.cleanup()
 
     def current(self):
-        data = json.loads(self.path.read_text())
+        data = json.loads(self.path.read_text(encoding='utf-8'))
         return {key:data[key] for key in Store.STATE_KEYS}
 
     def test_json_is_only_store_and_updates_after_each_change(self):
         tid = self.db.add('**任务**', '中文备注', priority='P0')
         col = self.db.add_column('工时', 'number')
         self.db.set_value(tid,col,'2.5')
-        data = json.loads(self.path.read_text())
+        data = json.loads(self.path.read_text(encoding='utf-8'))
         self.assertEqual(data['items'][0]['notes'], '中文备注')
         self.assertEqual(data['values'][str(tid)][f'custom_{col}'], 2.5)
         self.assertEqual(data['items'][0]['priority'], 'P0')
         self.assertFalse(list(self.path.parent.glob('*.sqlite*')))
         self.assertFalse(list(self.path.parent.glob('*.db')))
         self.assertNotIn('history', data)
-        self.assertTrue(json.loads(self.db.history_path.read_text())['undo'])
+        self.assertTrue(json.loads(self.db.history_path.read_text(encoding='utf-8'))['undo'])
 
     def test_parent_completion_and_exact_moment_restore_as_one_step(self):
         root = self.db.add('父任务', priority='P1')
@@ -119,9 +119,9 @@ class HistoryTests(unittest.TestCase):
                 self.db.add('不能保存')
         self.assertEqual(self.path.read_bytes(),before)
         self.assertFalse(list(self.path.parent.glob('*.tmp')))
-        before_count = len(json.loads(self.db.history_path.read_text())['undo'])
+        before_count = len(json.loads(self.db.history_path.read_text(encoding='utf-8'))['undo'])
         self.db.set_priority(tid,'')
-        self.assertEqual(len(json.loads(self.db.history_path.read_text())['undo']),before_count)
+        self.assertEqual(len(json.loads(self.db.history_path.read_text(encoding='utf-8'))['undo']),before_count)
 
     def test_multiple_store_instances_do_not_lose_writes(self):
         def add_group(group):
@@ -133,7 +133,7 @@ class HistoryTests(unittest.TestCase):
         items = Store(self.path).all()
         self.assertEqual(len(items),18)
         self.assertEqual(len({t['id'] for t in items}),18)
-        self.assertEqual(len(json.loads(self.db.history_path.read_text())['undo']),18)
+        self.assertEqual(len(json.loads(self.db.history_path.read_text(encoding='utf-8'))['undo']),18)
 
     def test_full_export_and_import_are_one_undoable_operation(self):
         self.db.add('原项目')
@@ -149,7 +149,7 @@ class HistoryTests(unittest.TestCase):
         self.db.import_json(content)
         expected={key:json.loads(content)[key] for key in Store.STATE_KEYS}
         self.assertEqual(self.current(),expected)
-        self.assertEqual(len(json.loads(self.db.history_path.read_text())['undo']),2)
+        self.assertEqual(len(json.loads(self.db.history_path.read_text(encoding='utf-8'))['undo']),2)
         self.db.undo()
         self.assertEqual(self.current(),before)
         self.db.redo()
@@ -198,8 +198,8 @@ class HistoryTests(unittest.TestCase):
 
     def test_label_upgrade_keeps_existing_history(self):
         self.db.add('已有任务')
-        data=json.loads(self.path.read_text())
-        data['history']=json.loads(self.db.history_path.read_text())
+        data=json.loads(self.path.read_text(encoding='utf-8'))
+        data['history']=json.loads(self.db.history_path.read_text(encoding='utf-8'))
         data['history']={key:data['history'][key] for key in ('undo','redo')}
         snapshots=[data]
         for entry in data['history']['undo']:
@@ -207,7 +207,7 @@ class HistoryTests(unittest.TestCase):
         for snapshot in snapshots:
             for task in snapshot['items']:
                 task.pop('labels',None)
-        self.path.write_text(json.dumps(data,ensure_ascii=False))
+        self.path.write_text(json.dumps(data,ensure_ascii=False),encoding='utf-8')
         store=Store(self.path)
         self.assertEqual(store.all()[0]['labels'],[])
         self.assertTrue(store.undo())
@@ -295,6 +295,7 @@ class HistoryTests(unittest.TestCase):
         with sqlite3.connect(legacy) as con:
             con.execute('CREATE TABLE tasks (id INTEGER PRIMARY KEY,parent_id INTEGER,title TEXT,notes TEXT,status TEXT,start_date TEXT,closed_date TEXT,position INTEGER,created_at TEXT)')
             con.execute('INSERT INTO tasks VALUES (1,NULL,?,?,?,?,NULL,0,?)',('旧任务','备注','进行中',today().isoformat(),today().isoformat()+'T10:00:00+08:00'))
+        con.close()
         before = legacy.read_bytes()
         store = Store(legacy)
         self.assertEqual(store.path.suffix,'.json')

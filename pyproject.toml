@@ -1,11 +1,13 @@
 [project]
 name = "worky"
-version = "0.1.0"
-description = "个人待办、子任务与甘特图 · Streamlit"
+version = "0.2.0"
+description = "Personal tasks, hierarchical updates, and Gantt timelines"
 requires-python = ">=3.12,<3.13"
 dependencies = [
+    "filelock>=3.16",
     "markdown-it-py>=4.3.0",
     "streamlit>=1.50,<2",
+    "tzdata>=2025.1",
 ]
 
 [dependency-groups]

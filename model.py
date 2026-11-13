@@ -3,9 +3,10 @@ import hashlib
 import json
 import math
 import os
+import errno
 import tempfile
 from uuid import uuid4
-import fcntl
+from filelock import FileLock
 from contextlib import contextmanager
 from datetime import datetime, date, time
 from pathlib import Path
@@ -82,12 +83,8 @@ class Store:
 
     @contextmanager
     def _locked(self):
-        with self.path.with_name('.' + self.path.name + '.lock').open('a') as lock:
-            fcntl.flock(lock, fcntl.LOCK_EX)
-            try:
-                yield
-            finally:
-                fcntl.flock(lock, fcntl.LOCK_UN)
+        with FileLock(str(self.path.with_name('.' + self.path.name + '.lock'))):
+            yield
 
     def _load(self):
         signature = self._file_signature()
@@ -179,11 +176,18 @@ class Store:
                 out.flush()
                 os.fsync(out.fileno())
             os.replace(temporary, path)
-            directory = os.open(path.parent, os.O_DIRECTORY)
-            try:
-                os.fsync(directory)
-            finally:
-                os.close(directory)
+            # Windows has no directory fsync; some macOS/filesystem combinations
+            # reject it. The temporary file itself is always flushed above.
+            if os.name != 'nt':
+                directory = os.open(path.parent, os.O_RDONLY | getattr(os, 'O_DIRECTORY', 0))
+                try:
+                    try:
+                        os.fsync(directory)
+                    except OSError as exc:
+                        if exc.errno not in (errno.EINVAL, errno.ENOTSUP):
+                            raise
+                finally:
+                    os.close(directory)
         finally:
             if temporary and temporary.exists():
                 temporary.unlink()

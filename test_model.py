@@ -279,10 +279,10 @@ class TaskTests(unittest.TestCase):
     def test_legacy_note_title_migrates_into_notes(self):
         item_id = self.db.add('占位')
         import json
-        state = json.loads(self.db.path.read_text())
+        state = json.loads(self.db.path.read_text(encoding='utf-8'))
         state['format_version'] = 1
         state['items'][0].update(kind='note',title='旧文本',notes='原备注')
-        self.db.path.write_text(json.dumps(state,ensure_ascii=False))
+        self.db.path.write_text(json.dumps(state,ensure_ascii=False), encoding='utf-8')
         item = Store(self.db.path).all()[0]
         self.assertEqual(item['id'],item_id)
         self.assertEqual(item['title'],'')

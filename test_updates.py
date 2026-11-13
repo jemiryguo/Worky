@@ -93,8 +93,8 @@ class UpdateTests(unittest.TestCase):
         self.assertEqual(Store(self.path).all(),before)
 
     def test_old_json_and_history_gain_empty_update_lists(self):
-        data=json.loads(self.path.read_text())
-        history=json.loads(self.store.history_path.read_text())
+        data=json.loads(self.path.read_text(encoding='utf-8'))
+        history=json.loads(self.store.history_path.read_text(encoding='utf-8'))
         data['history']={key:history[key] for key in ('undo','redo')}
         snapshots=[data]
         for entry in data['history']['undo']:
@@ -102,7 +102,7 @@ class UpdateTests(unittest.TestCase):
         for snapshot in snapshots:
             for item in snapshot['items']:
                 item.pop('updates',None)
-        self.path.write_text(json.dumps(data,ensure_ascii=False))
+        self.path.write_text(json.dumps(data,ensure_ascii=False),encoding='utf-8')
         reopened=Store(self.path)
         self.assertEqual(reopened.all()[0]['updates'],[])
         reopened.undo()

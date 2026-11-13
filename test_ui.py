@@ -44,7 +44,7 @@ class UITests(unittest.TestCase):
                 self.assertFalse(sortable['title'])
                 self.assertEqual(store.preference('column_sortable')['labels'], False)
                 self.assertEqual(payload['stateFilter'], '全部状态')
-                self.assertEqual(len(app.selectbox), 1)
+                self.assertEqual(len(app.selectbox), 2)
                 self.assertIn('<strong>任务 A</strong>', payload['rendered'][str(task)]['title'])
                 self.assertNotIn('<script>', payload['rendered'][str(task)]['notes'])
                 self.assertIn('&lt;script&gt;', payload['rendered'][str(task)]['notes'])

@@ -6,9 +6,9 @@
 <p align="center">让工作井然有序。</p>
 <p align="center"><a href="README.md">English</a> · <strong>简体中文</strong></p>
 
-Worky 是一个个人任务管理工具，把可编辑的任务表格、具有父子层级的更新看板和甘特图放在同一个网页里。使用 Python 与 Streamlit 构建，运行在 Linux 或 WSL 中，项目保存在本地可读的 JSON 文件里。
+Worky 是一个个人任务管理工具，把可编辑的任务表格、具有父子层级的更新看板和甘特图放在同一个网页里。使用 Python 与 Streamlit 构建，运行在 Windows、macOS 或 Linux（含 WSL）中，项目保存在本地可读的 JSON 文件里。
 
-目前应用界面为简体中文。
+通过顶部的语言选项，可在**中文与 English** 之间切换。选择会随项目保存；任务内容、自定义列名、标签和已有数据保持不变。
 
 ![Worky：任务表格、嵌套更新看板和甘特图](assets/screenshots/worky-light.png)
 
@@ -34,27 +34,34 @@ Worky 是一个个人任务管理工具，把可编辑的任务表格、具有�
 
 ### 环境要求
 
-- Linux，或 WSL 中的 Linux 发行版。
+- Windows、macOS 或 Linux；Windows 用户不再必须安装 WSL。
 - [uv](https://docs.astral.sh/uv/getting-started/installation/)。
 - Python 3.12，可由 uv 自动安装所需版本。
 
-后端使用 Linux 文件锁 `fcntl`，目前不支持直接在原生 Windows Python 中运行。Windows 用户请在 WSL 内执行：
+安装 [Git](https://git-scm.com/) 与 uv 后，克隆仓库并安装锁定的依赖：
 
 ```bash
 git clone git@github.com:jemiryguo/Worky.git
 cd Worky
 uv sync --locked
-./start.sh
 ```
 
-在浏览器打开 **http://localhost:8501**。启动脚本监听 `0.0.0.0`；Worky 面向个人可信环境，目前没有内置登录或访问控制。
+所有支持的平台均可这样启动：
+
+```bash
+uv run --locked python run.py
+```
+
+也可以使用快捷脚本：Windows 在 PowerShell / 命令提示符中运行 **`start.bat`**；macOS、Linux 和 WSL 运行 **`./start.sh`**。
+
+在浏览器打开 **http://localhost:8501**。服务默认监听 `0.0.0.0`；Worky 面向个人可信环境，目前没有内置登录或访问控制。
 
 首次启动自动创建空项目。仓库不包含示例任务或个人数据。
 
 需要更换端口时：
 
 ```bash
-PORT=8502 ./start.sh
+uv run --locked python run.py --port 8502 --host 127.0.0.1
 ```
 
 ## 使用方式
@@ -74,7 +81,7 @@ P0 优先级最高，未设置时继承父任务；任务完结或废弃后清�
 - **单击任务条**选中并同步更新看板，**双击**打开详情。
 - 在**日期表头拖动**选择范围。松手后保留选区，范围外时间变灰，看板只显示对应日期内的更新，包含首尾日期。
 - 点击**甘特图空白处**取消任务选择和日期高亮，看板返回总览。
-- 使用右下角 **+ / −** 缩放，在日期表头滚动滚轮，或在图内按 **Ctrl + 滚轮**缩放；滚轮缩放保持鼠标指向的日期不动。
+- 使用右下角 **+ / −** 缩放，在日期表头滚动滚轮，或在图内按 **Ctrl + 滚轮**缩放（macOS 也支持 **⌘ + 滚轮**）；滚轮缩放保持鼠标指向的日期不动。
 
 任务起点位于开始日期的开头。进行中的任务延伸到当前时刻；今天结束的任务按记录的具体时刻绘制，过去结束的任务显示到结束日期的末尾。每周从星期日开始。
 
@@ -90,7 +97,7 @@ P0 优先级最高，未设置时继承父任务；任务完结或废弃后清�
 
 ### 撤销、导入与导出
 
-通过顶部按钮或 **Ctrl+Z / Ctrl+Y** 撤销、重做。撤销后再修改，会清空原来的重做分支。历史在服务重启后保留，超出容量限制时清理最旧记录。
+通过顶部按钮或 **Ctrl+Z / Ctrl+Y**（macOS 也支持 **⌘Z / ⌘Y、⌘Shift+Z**） 撤销、重做。撤销后再修改，会清空原来的重做分支。历史在服务重启后保留，超出容量限制时清理最旧记录。
 
 **导出**下载不包含撤销历史的项目 JSON。**导入**直接打开文件选择器，校验内容并确认后替换当前项目。导入本身可以通过本机服务端历史撤销；上传文件里的旧历史不会被导入。
 
@@ -108,34 +115,45 @@ P0 优先级最高，未设置时继承父任务；任务完结或废弃后清�
 
 | 环境变量 | 默认值 | 说明 |
 | --- | --- | --- |
-| `PORT` | `8501` | `start.sh` 使用的端口。 |
+| `PORT` | `8501` | `run.py` 和两个启动脚本使用的端口。 |
+| `WORKY_HOST` | `0.0.0.0` | 监听地址，可通过 `--host` 覆盖。 |
 | `TASK_DATA_PATH` | 项目目录内的 `data/tasks.json` | 项目 JSON 路径，历史和锁文件保存在其旁边。 |
 | `TASK_TIMEZONE` | `Asia/Shanghai` | 日期和时间使用的 IANA 时区。 |
 | `WORKY_HISTORY_MAX_BYTES` | `10485760`，即 10 MiB | 历史文件的 UTF-8 字节上限，最小值为 `1024`。 |
 
-例如，将数据放在源码目录外，并将历史限制为 5 MiB：
+例如，在 macOS、Linux 或 WSL 的 shell 中，将数据放在源码目录外，并将历史限制为 5 MiB：
 
 ```bash
 TASK_DATA_PATH="$HOME/worky-data/tasks.json" \
 WORKY_HISTORY_MAX_BYTES=5242880 \
-./start.sh
+uv run --locked python run.py
 ```
 
 历史超出上限时清理最旧记录。若单次操作的历史大于整个上限，操作仍保存到项目，但无法撤销。任务里的阶段更新属于正式项目内容，**不会**随着撤销历史的清理而删除。
+
+Windows PowerShell 中可以这样配置：
+
+```powershell
+$env:TASK_DATA_PATH = "$env:USERPROFILE\worky-data\tasks.json"
+$env:WORKY_HISTORY_MAX_BYTES = "5242880"
+uv run --locked python run.py
+```
+
+文本文件统一使用 UTF-8；跨平台操作系统文件锁协调写入，文件内容刷新后再原子替换，在平台支持时额外同步目录。显式依赖 `tzdata`，以支持 Windows 上的时区配置。
 
 ## 开发与测试
 
 ```bash
 uv sync --locked
-uv run --locked python -m unittest -v \
-  test_model.py test_history.py test_updates.py \
-  test_ui.py test_read_cache.py test_history_files.py
+uv run --locked python -m unittest discover -v
 ```
 
-测试覆盖层级、日期、标签、更新、保存、历史迁移、容量限制、并发、写入失败以及 Streamlit 数据传递。测试使用临时项目。
+测试覆盖层级、日期、标签、更新、保存、历史迁移、容量限制、并发、写入失败以及 Streamlit 数据传递。测试使用临时项目。GitHub Actions 使用 Python 3.12 在 Windows、macOS 和 Ubuntu 上运行测试；Windows 不支持目录 fsync，因此跳过对应的目录同步测试。
 
 | 路径 | 作用 |
 | --- | --- |
+| `run.py`、`start.bat`、`start.sh` | 跨平台服务启动入口及快捷脚本。 |
+| `i18n.py`、`assets/locales/en.json` | Python 和浏览器组件共用的界面翻译。 |
 | `app.py` | Streamlit 布局、弹窗、Markdown 渲染及事件处理。 |
 | `model.py` | 项目保存、层级规则、更新和有限历史。 |
 | `grid/` | 浏览器端任务表格、更新看板和甘特图。 |

@@ -28,7 +28,7 @@ class HistoryFileTests(unittest.TestCase):
         state = json.loads(self.path.read_bytes())
         history = self.history()
         state['history'] = {key:history[key] for key in ('undo','redo')}
-        self.path.write_text(json.dumps(state, ensure_ascii=False))
+        self.path.write_text(json.dumps(state, ensure_ascii=False),encoding='utf-8')
         self.db.history_path.unlink()
         migrated = Store(self.path)
         self.assertNotIn('history', json.loads(migrated.export_json()))
@@ -118,7 +118,7 @@ class HistoryFileTests(unittest.TestCase):
         self.db.add('原任务')
         state = json.loads(self.path.read_bytes())
         state['items'][0]['title'] = '外部修改'
-        self.path.write_text(json.dumps(state, ensure_ascii=False))
+        self.path.write_text(json.dumps(state, ensure_ascii=False),encoding='utf-8')
         self.assertFalse(self.db.undo())
         self.assertEqual(self.db.all()[0]['title'], '外部修改')
         self.db.add('新任务')

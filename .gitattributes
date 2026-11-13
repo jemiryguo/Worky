@@ -8,3 +8,5 @@
 *.toml text eol=lf
 *.svg text eol=lf
 *.png binary
+*.bat text eol=crlf
+*.yml text eol=lf
