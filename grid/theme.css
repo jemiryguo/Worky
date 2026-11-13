@@ -1,0 +1,63 @@
+html[data-theme="dark"] {color-scheme:dark;}
+html[data-theme="dark"] body {background:#151b25;color:#d7dfeb;}
+html[data-theme="dark"] .board {background:#1b222d;border-color:#354154;}
+html[data-theme="dark"] .left {border-right-color:#354154;}
+html[data-theme="dark"] .right {background:#1b222d;}
+html[data-theme="dark"] .splitter {background:#263140;}
+html[data-theme="dark"] .splitter:hover {background:#506a91;}
+html[data-theme="dark"] .head,html[data-theme="dark"] .head .title-cell,html[data-theme="dark"] .week-group,html[data-theme="dark"] .period-cell {background:#263140;border-color:#3b475a;color:#b8c6da;}
+html[data-theme="dark"] .head .cell {color:#b8c6da;}
+html[data-theme="dark"] .cell,html[data-theme="dark"] .row,html[data-theme="dark"] .ganttrow,html[data-theme="dark"] .draftrow,html[data-theme="dark"] .day-cell {border-color:#323d4d;}
+html[data-theme="dark"] .row,html[data-theme="dark"] .row.note,html[data-theme="dark"] .row.selected,html[data-theme="dark"] .draftrow {color:#d7dfeb;}
+html[data-theme="dark"] .row:hover {box-shadow:inset 0 0 0 999px #ffffff07;}
+html[data-theme="dark"] .row.selected {--selection-border:#7c9bc8;}
+html[data-theme="dark"] .markdown-display {color:#d7dfeb;}
+html[data-theme="dark"] .markdown-display a {color:#95b7f0;}
+html[data-theme="dark"] .markdown-display code {background:#344154;color:#dce6f5;}
+html[data-theme="dark"] .readonly,html[data-theme="dark"] .calendar-input:disabled {color:#9caac0;}
+html[data-theme="dark"] .row input:focus,html[data-theme="dark"] .draftrow input:focus,html[data-theme="dark"] .row select:focus {background:#29364a;box-shadow:inset 0 0 0 2px #7f9eca;color:#e3ebf7;}
+html[data-theme="dark"] .twisty,html[data-theme="dark"] .priority-chevron {color:#a9bbd3;}
+html[data-theme="dark"] .todo-toggle:not(.checked),html[data-theme="dark"] .todo-placeholder {background:#1b2533;border-color:#8194ae;}
+html[data-theme="dark"] .todo-toggle:disabled {background:#303b4c!important;color:#a8b5c8;border-color:#617088;}
+html[data-theme="dark"] .row.abandoned .markdown-display {color:#7f8da2;}
+html[data-theme="dark"] .tree-guide,html[data-theme="dark"] .tree-branch {border-color:#70839d;}
+html[data-theme="dark"] .day-cell {color:#a5b4c9;}
+html[data-theme="dark"] .day-cell.weekend {background:#302c22;color:#c8b98d;}
+html[data-theme="dark"] .day-cell.is-today {background:#3d2834;color:#f4a0ab;}
+html[data-theme="dark"] .weekend-band {background:#96815809;}
+html[data-theme="dark"] .day-cell.range-selected,html[data-theme="dark"] .week-group.range-selected,html[data-theme="dark"] .period-cell.range-selected {background:#33496a;color:#c1d5f4;}
+html[data-theme="dark"] .range-boundary {border-color:#91b0e1;}
+html[data-theme="dark"] .context {background:#202b3a;border-color:#3a4a61;box-shadow:0 7px 25px #0005;color:#d7dfeb;}
+html[data-theme="dark"] .context button {background:#202b3a;color:#c7d5e9;}
+html[data-theme="dark"] .context button:hover,html[data-theme="dark"] .column-context label:hover,html[data-theme="dark"] .label-context label:hover {background:#34445d;}
+html[data-theme="dark"] .context button.danger,html[data-theme="dark"] .column-context .delete-column {color:#f39da9;}
+html[data-theme="dark"] .column-context h4,html[data-theme="dark"] .column-context small {color:#a5b5cd;}
+html[data-theme="dark"] .column-context hr,html[data-theme="dark"] .label-context form {border-color:#3a485c;}
+html[data-theme="dark"] .label-context form {background:#202b3a;}
+html[data-theme="dark"] .column-context input[type="text"],html[data-theme="dark"] .column-context select,html[data-theme="dark"] .label-context form input,html[data-theme="dark"] .context .inline-name {background:#29374b;color:#e1eaf7;border-color:#526785;}
+html[data-theme="dark"] .column-context form button {background:#527bb9;color:#fff;}
+html[data-theme="dark"] .column-menu-row>button.pinned {background:#354c6c;color:#bbd2f6;}
+html[data-theme="dark"] .priority-select option {background:#263140;color:#d7dfeb;}
+html[data-theme="dark"] .priority-select[data-effective-priority="P0"] {color:#f29aa8!important;}
+html[data-theme="dark"] .priority-select[data-effective-priority="P1"] {color:#e6b46a!important;}
+html[data-theme="dark"] .priority-select[data-effective-priority="P2"] {color:#8bb9ed!important;}
+html[data-theme="dark"] .priority-select[data-effective-priority="P3"] {color:#bca4e2!important;}
+html[data-theme="dark"] .insert-plus {background:#293b55;border-color:#637fa6;color:#c2d8fa;}
+html[data-theme="dark"] .insert-boundary:after {border-color:#6f95c8;}
+html[data-theme="dark"] .zoom-controls {background:#202b3aee;border-color:#3c4d65;box-shadow:0 3px 13px #0004;}
+html[data-theme="dark"] .zoom-controls button {color:#cfdef4;}
+html[data-theme="dark"] .zoom-controls button:hover {background:#34445d;}
+html[data-theme="dark"] .pane {scrollbar-color:#53637b #202a39;}
+
+html[data-theme="dark"] .insert-boundary:hover .insert-plus,
+html[data-theme="dark"] .insert-plus:hover,
+html[data-theme="dark"] .insert-plus:focus,
+html[data-theme="dark"] .insert-plus:focus-visible {background:#354b6b;border-color:#809fc9;color:#e1ecff;}
+html[data-theme="dark"] .insert-plus:active {background:#425e83;border-color:#a3c0ed;color:#f1f6ff;}
+html[data-theme="dark"] .insert-plus:focus-visible {outline:2px solid #a3c0ed;outline-offset:2px;}
+
+html[data-theme="dark"] .updates-count{color:#b4c2d7}html[data-theme="dark"] .updates-latest{color:#91a2ba}html[data-theme="dark"] .updates-empty{color:#a4bcdf}html[data-theme="dark"] .updates-cell-button:hover{background:#ffffff07}html[data-theme="dark"] .update-marker{background:#d5b274;border-color:#f0d6a5;box-shadow:0 0 0 1px #1b2533}html[data-theme="dark"] .update-marker:hover{background:#f1cf91}html[data-theme="dark"] .update-marker.outside-range{background:#65748c;border-color:#91a0b5}html[data-theme="dark"] .update-preview{background:#202b3a;border-color:#41516a;box-shadow:0 7px 25px #0005;color:#d7dfeb}html[data-theme="dark"] .update-preview-heading button{color:#bdd0ec}html[data-theme="dark"] .update-preview time{color:#9baec8}html[data-theme="dark"] .update-preview article+article{border-color:#3b4a60}html[data-theme="dark"] .update-content pre{background:#2b3a50}html[data-theme="dark"] .update-content a{color:#a2c3f5}
+
+html[data-theme="dark"] .updates-board{background:#18212d;border-color:#354154}html[data-theme="dark"] .updates-board-header{background:#263140;border-color:#3b475a;color:#c4d1e4}html[data-theme="dark"] .board-update-count,html[data-theme="dark"] .board-task-name{color:#99abc4}html[data-theme="dark"] .board-update-card{background:#202b3a;border-color:#3b4b63;color:#d7dfeb}html[data-theme="dark"] .board-composer{background:#1e2836;border-color:#354154}html[data-theme="dark"] .board-time-button{color:#9eb1cb}html[data-theme="dark"] .board-time-button:hover{color:#bad3f6}html[data-theme="dark"] .board-edited{color:#7589a5}html[data-theme="dark"] .board-card-tools button{color:#a2b7d4}html[data-theme="dark"] .board-card-tools button:hover{background:#34445d;color:#dce9fc}html[data-theme="dark"] .board-time-fields input,html[data-theme="dark"] .board-update-form textarea{background:#29364a;border-color:#475a77;color:#d7e4f6}html[data-theme="dark"] .board-update-form textarea::placeholder{color:#92a5c1}html[data-theme="dark"] .board-secondary{background:#29364a;border-color:#475a77;color:#becfe7}html[data-theme="dark"] .board-primary{background:#557db7;border-color:#668fca}html[data-theme="dark"] .board-primary:hover{background:#648dc6}html[data-theme="dark"] .board-no-selection,html[data-theme="dark"] .board-empty{color:#8c9fb9}html[data-theme="dark"] .board-delete-confirm{border-color:#3b4b63;color:#e5abb3}html[data-theme="dark"] .board-delete-confirm button{background:#29364a;border-color:#475a77;color:#c4d3e8}html[data-theme="dark"] .board-delete-confirm .board-danger{background:#573640;border-color:#8b5763;color:#f3c2cb}html[data-theme="dark"] .board-card-focused{border-color:#a98e59;box-shadow:0 0 0 1px #6e5b3a}html[data-theme="dark"] .board-form-error{color:#f2a5b0}html[data-theme="dark"] .board-update-list{scrollbar-color:#53637b transparent}
+
+html[data-theme="dark"] .ganttrow.selected .taskbar,html[data-theme="dark"] .ganttrow.selected .diamond{outline-color:#a4bfe8}

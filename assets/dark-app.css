@@ -1,0 +1,42 @@
+:root {color-scheme:dark;--background-color:#151b25;--secondary-background-color:#263140;--text-color:#d7dfeb;--border-color:#3b485c;--primary-color:#8dace2;}
+.stApp,[data-testid="stAppViewContainer"],[data-testid="stMain"] {background:#151b25!important;color:#d7dfeb!important;}
+.app-brand {color:#e2e9f3!important;}
+[data-testid="stMarkdownContainer"], [data-testid="stCaptionContainer"],h1,h2,h3,label {color:#d7dfeb;}
+button[data-testid^="stBaseButton"] {background:#202a39;color:#d7dfeb;border-color:#3c4a5f;}
+button[data-testid^="stBaseButton"]:hover {background:#2d3b50;border-color:#7f9ac2;color:#edf3fc;}
+button[data-testid^="stBaseButton"]:disabled {color:#617188;border-color:#303d50;background:#1b2431;}
+button[data-testid="stBaseButton-primary"] {background:#567fbc;color:#fff;border-color:#567fbc;}
+.st-key-status_filter button {color:#aebbd0!important;}
+.st-key-status_filter button[aria-checked="true"] {background:#373125!important;color:#efdaaa!important;box-shadow:inset 0 0 0 1px #645637!important;}
+.st-key-status_filter button:hover {background:#263244!important;}
+.st-key-status_filter button[aria-checked="true"]:hover {background:#443a28!important;}
+[data-testid="stSelectbox"] [data-baseweb="select"]>div,[data-testid="stSelectbox"] [role="combobox"] {background:#263140!important;color:#d7dfeb!important;border-color:#3c4a5f!important;}
+[data-testid="stSelectbox"] svg {fill:#aebdd2;}
+[data-testid="stTextInput"] input,[data-testid="stTextArea"] textarea {background:#263140!important;color:#d7dfeb!important;caret-color:#d7dfeb;}
+[data-testid="stTextInput"] [data-baseweb="base-input"],[data-testid="stTextArea"] [data-baseweb="textarea"] {background:#263140;border-color:#3c4a5f;}
+[role="listbox"],[data-baseweb="popover"]>div {background:#202a39!important;color:#d7dfeb!important;}
+[role="option"] {background:#202a39!important;color:#d7dfeb!important;}
+[role="option"]:hover,[role="option"][aria-selected="true"] {background:#34445d!important;}
+section[role="dialog"] {background:#1c2533!important;color:#d7dfeb!important;border:1px solid #3a485c;}
+section[role="dialog"] h2 {color:#e2e9f3!important;}
+[data-testid="stFileUploaderDropzone"] {background:#263140!important;color:#d7dfeb!important;border-color:#43516a;}
+[data-testid="stFileUploaderDropzone"] svg {fill:#aebdd2;}
+[data-testid="stForm"],[data-testid="stExpander"] {border-color:#3c4a5f;}
+[data-baseweb="tooltip"] {background:#263140!important;color:#d7dfeb!important;}
+[data-testid="stSelectbox"] [role="group"] {background:#263140!important;border:1px solid #3c4a5f!important;border-radius:7px;}
+[data-testid="stSelectbox"] [role="combobox"] {border:0!important;outline-color:#87a9df;}
+[data-testid="stSelectbox"] button {background:transparent!important;border:0!important;color:#b8c8df!important;}
+[data-testid="stTextAreaRootElement"],[data-testid="stTextInputRootElement"] {background:#263140!important;border-color:#3c4a5f!important;}
+[data-testid="stTextAreaRootElement"] textarea,[data-testid="stTextInputRootElement"] input {border-color:#3c4a5f!important;}
+button[data-testid="stBaseButton-primaryFormSubmit"] {background:#527bb9;color:#fff;border-color:#527bb9;}
+section[role="dialog"] button[aria-label="Close"] {background:transparent;color:#b8c8df;}
+section[role="dialog"] button[aria-label="Close"]:hover {background:#34445d;color:#edf3fc;}
+[data-testid="stAlert"] {background:#283448!important;color:#d7dfeb!important;border-color:#52607a!important;}
+[role="tooltip"] {color:#d7dfeb!important;}
+[data-testid="stTooltipContent"],.stTooltipContent {background:#263140!important;color:#d7dfeb!important;border:1px solid #42516a;box-shadow:0 5px 20px #0005;}
+[data-testid="stTooltipContent"] [data-testid="stMarkdownContainer"],[data-testid="stTooltipContent"] p {color:#d7dfeb!important;}
+[data-testid="stTooltipContent"] a {color:#a2c3f5!important;}
+[data-testid="stPopoverBody"] {background:#202b3a!important;color:#d7dfeb!important;border-color:#41516a!important;}
+button[data-testid="stPopoverButton"] {background:#202a39;color:#d7dfeb;border-color:#3c4a5f;}
+button[data-testid="stPopoverButton"]:hover,button[data-testid="stPopoverButton"][aria-expanded="true"] {background:#34445d;color:#edf3fc;border-color:#7f9ac2;}
+[data-testid="stTextArea"] textarea::placeholder,[data-testid="stTextInput"] input::placeholder {color:#94a4bb!important;opacity:1;}
